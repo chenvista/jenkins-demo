@@ -17,71 +17,14 @@ pipeline{
 
       // "stages"定义项目构建的多个模块，可以添加多个 “stage”， 可以多个 “stage” 串行或者并行执行
       stages{
-        // 定义第一个stage， 完成克隆源码的任务
-      //  stage('Git'){
-      //    steps{
-      //      git branch: '${BRANCH}', credentialsId: '', url: 'https://github.com/AliyunContainerService/jenkins-demo.git'
-      //    }
-      //  }
-
-      //  // 添加第二个stage， 运行源码打包命令
-      //  stage('Package'){
-      //    steps{
-      //        container("maven") {
-      //            sh "mvn package -B -DskipTests"
-      //        }
-      //    }
-      //  }
-
-
-      //  // 添加第四个stage, 运行容器镜像构建和推送命令， 用到了environment中定义的groovy环境变量
-      //  stage('Image Build And Publish'){
-      //    steps{
-      //        container("kaniko") {
-      //            sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=${ORIGIN_REPO}/${REPO}:${IMAGE_TAG}"
-      //        }
-      //    }
-      //  }
-
-
-//        stage('Deploy to Kubernetes') {
-//            parallel {
-//                stage('Deploy to Production Environment') {
-//                    when {
-//                        expression {
-//                            "$BRANCH" == "master"
-//                        }
-//                    }
-//                    steps {
-//                        container('kubectl') {
-//                            step([$class: 'KubernetesDeploy', authMethod: 'certs', apiServerUrl: 'https://kubernetes.default.svc.cluster.local:443', credentialsId:'k8sCertAuth', config: 'deployment.yaml',variableState: 'ORIGIN_REPO,REPO,IMAGE_TAG'])
-//                        }
-//                    }
-//                }
-//                stage('Deploy to Staging001 Environment') {
-//                    when {
-//                        expression {
-//                            "$BRANCH" == "latest"
-//                        }
-//                    }
-//                    steps {
-//                        container('kubectl') {
-//                            step([$class: 'KubernetesDeploy', authMethod: 'certs', apiServerUrl: 'https://kubernetes.default.svc.cluster.local:443', credentialsId:'k8sCertAuth', config: 'deployment.yaml',variableState: 'ORIGIN_REPO,REPO,IMAGE_TAG'])
-//                        }
-//                    }
-//                }
-//            }
-//        }
 
         stage('Deploy to Kubernetes') {
-		stage('Deploy to Production Environment') {
-			steps {
-				container('kubectl') {
-					step([$class: 'KubernetesDeploy', authMethod: 'certs', apiServerUrl: 'https://kubernetes.default.svc.cluster.local:443', credentialsId:'k8sCertAuth', config: 'deployment.yaml',variableState: 'ORIGIN_REPO,REPO,IMAGE_TAG'])
-				}
-			}
-		}
-	}
+                    steps {
+                        container('kubectl') {
+                            step([$class: 'KubernetesDeploy', authMethod: 'certs', apiServerUrl: 'https://kubernetes.default.svc.cluster.local:443', credentialsId:'k8sCertAuth', config: 'deployment.yaml',variableState: 'ORIGIN_REPO,REPO,IMAGE_TAG'])
+                        }
+                    }
+        }
 
       }
     }
